@@ -41,6 +41,9 @@ class NeuralNetwork {
         void feedForward();
         void backPropagation();
 
+        // Output results
+        void printTarget();
+        void printOutput();
     private:
         vector<int> topology;
         vector<Layer *> layers;

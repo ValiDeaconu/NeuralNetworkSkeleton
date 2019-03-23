@@ -16,6 +16,7 @@ int main() {
     input.push_back(1.0f);
 
     NeuralNetwork *nn = new NeuralNetwork(topology);
+    //NeuralNetwork *nn = new NeuralNetwork("data/progress1.txt");
     nn->setInput(input);
     nn->setTarget(input);
 
@@ -31,6 +32,8 @@ int main() {
         }
         nn->backPropagation();
     }
+
+    nn->saveProgress("data/progress1.txt");
 
     delete nn;
     

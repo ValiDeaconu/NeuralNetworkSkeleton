@@ -11,6 +11,7 @@ class Layer {
     public:
         // Constructor
         Layer(unsigned int size);
+        Layer(vector<Neuron *> neurons);
 
         // Destructor
         ~Layer();

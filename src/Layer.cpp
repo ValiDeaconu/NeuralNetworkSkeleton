@@ -7,6 +7,11 @@ Layer::Layer(unsigned int size) {
         this->neurons.push_back(new Neuron(0.0f));
 }
 
+Layer::Layer(vector<Neuron *> neurons) {
+    this->size = neurons.size();
+    this->neurons = neurons;
+}
+
 // Destructor
 Layer::~Layer() {
     for (unsigned int i = 0; i < this->neurons.size(); ++i)

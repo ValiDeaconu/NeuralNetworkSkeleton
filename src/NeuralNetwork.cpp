@@ -38,12 +38,90 @@ NeuralNetwork::~NeuralNetwork() {
 
 // Load progression from file
 NeuralNetwork::NeuralNetwork(const char * path) {
+    FILE * fin = fopen(path, "r");
+    assert(fin != NULL);
 
+    // Reading topology
+    unsigned int szTopology = 0;
+    assert(fscanf(fin, "%u", &szTopology) == 1);
+
+    int x;
+    for (unsigned int i = 0; i < szTopology; ++i) {
+      assert(fscanf(fin, "%d", &x) == 1);
+      this->topology.push_back(x);
+    }
+
+    // Reading layers
+    double y;
+    for (unsigned int i = 0; i < szTopology; ++i) {
+        vector<Neuron *> neurons;
+        for (int j = 0; j < topology.at(i); ++j) {
+          assert(fscanf(fin, "%lf", &y) == 1);
+          neurons.push_back(new Neuron(y));
+        }
+        this->layers.push_back(new Layer(neurons));
+    }
+
+    // Reading weight matrices
+    for (unsigned int i = 0; i < szTopology - 1; ++i) {
+        Matrix *m = new Matrix(topology.at(i), topology.at(i + 1), true);
+        for (int r = 0; r < this->topology.at(i); ++r) {
+            for (int c = 0; c < this->topology.at(i + 1); ++c) {
+                assert(fscanf(fin, "%lf", &y) == 1);
+                m->setValue(r, c, y);
+            }
+        }
+
+        this->weightMatrix.push_back(m);
+    }
+
+    // Reading errors
+    for (int i = 0; i < topology.at(szTopology - 1); ++i) {
+        assert(fscanf(fin, "%lf", &y) == 1);
+        this->errors.push_back(y);  
+    }
+
+    fclose(fin);
 }
 
 // Download progression to file
 void NeuralNetwork::saveProgress(const char * path) {
+    FILE * fout = fopen(path, "w");
+    assert(fout != NULL);
 
+    // Writing topology
+    unsigned int szTopology = this->topology.size();
+    fprintf(fout, "%u\n", szTopology);
+
+    for (unsigned int i = 0; i < szTopology; ++i) 
+        fprintf(fout, "%d ", this->topology.at(i));
+    fprintf(fout, "\n");
+
+    // Writing layers
+    for (unsigned int i = 0; i < szTopology; ++i) {
+        for (int j = 0; j < topology.at(i); ++j) {
+          fprintf(fout, "%lf ", this->layers.at(i)->getNeurons().at(j)->getValue());
+        }
+        fprintf(fout, "\n");
+    }
+
+    // Reading weight matrices
+    for (unsigned int i = 0; i < szTopology - 1; ++i) {
+        for (int r = 0; r < this->topology.at(i); ++r) {
+            for (int c = 0; c < this->topology.at(i + 1); ++c) {
+                fprintf(fout, "%lf ", this->weightMatrix.at(i)->getValue(r, c));
+            }
+            fprintf(fout, "\n");
+        }
+    }
+
+    // Reading errors
+    for (int i = 0; i < topology.at(szTopology - 1); ++i) {
+        fprintf(fout, "%lf ", this->errors.at(i));
+    }
+    fprintf(fout, "\n");
+
+    fclose(fout);
 }
 
 // Getters
@@ -99,12 +177,12 @@ void NeuralNetwork::setErrors() {
     vector<Neuron *> outputNeurons = this->layers.at(outputLayerIndex)->getNeurons();
 
     for (unsigned int i = 0; i < targetSize; ++i) {
-        double tmp = pow(outputNeurons.at(i)->getActivatedValue() - target.at(i), 2);
+        double tmp = outputNeurons.at(i)->getActivatedValue() - target.at(i);
         this->errors.at(i) = tmp;
-        this->error += tmp;
+        this->error += pow(tmp, 2);
     }
 
-    this->error *= 0.5;
+    this->error = 0.5 * this->error;
 
     historicalErrors.push_back(this->error);
 }
@@ -207,4 +285,21 @@ void NeuralNetwork::backPropagation() {
 
     reverse(newWeights.begin(), newWeights.end());
     this->weightMatrix = newWeights;
+}
+
+// Output results
+void NeuralNetwork::printTarget() {
+    printf("Target:\n");
+    for (unsigned int i = 0; i < this->target.size(); ++i)
+        printf("%lf ", this->target.at(i));
+    printf("\n");
+}
+
+void NeuralNetwork::printOutput() {
+    printf("Output:\n");
+    Matrix *m = this->layers.at(this->layers.size() - 1)->toMatrixActivatedValues();
+    for (unsigned int i = 0; i < m->getCols(); ++i)
+        printf("%lf ", m->getValue(0, i));
+    printf("\n");
+    delete m;
 }
