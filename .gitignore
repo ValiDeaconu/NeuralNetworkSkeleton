@@ -33,3 +33,9 @@
 
 # Ignoring .vscode folder
 .vscode/
+
+# Ignoring data garbage
+data/*.txt
+
+# Ignorig object file
+NeuralNetwork
