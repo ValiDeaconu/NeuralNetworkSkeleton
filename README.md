@@ -43,3 +43,33 @@ Progress file with be the file where the network will load and save its progress
 ```
 Input file has to be file format 2.
 Progress file with be the file where the network will load its progress.
+
+## File formats
+
+1. Format 0
+```
+ <generations>
+ <topology_size>
+ <topology_vector>
+ <input_size>
+ <input_vector>
+ <target_size>
+ <target_vector>
+```
+
+2. Format 1
+```
+ <generations>
+ <input_size>
+ <input_vector>
+ <target_size>
+ <target_vector>
+```
+
+3. Format 2
+```
+ <input_size>
+ <input_vector>
+ <target_size>
+ <target_vector>
+```
