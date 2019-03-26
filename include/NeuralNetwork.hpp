@@ -1,60 +1,36 @@
-#ifndef _NEURL_NETWORK_HPP_
-#define _NEURL_NETWORK_HPP_
+#ifndef __NEURAL_NETWORK_HPP_
+#define __NEURAL_NETWORK_HPP_
 
 #include <vector>
-#include <algorithm>
-#include "../include/Layer.hpp"
+
 #include "../include/Matrix.hpp"
 
 using namespace std;
 
-class NeuralNetwork {
-    public:
-        // Constructor
-        NeuralNetwork(vector<int> topology);
+namespace OpenNN {
+    class NeuralNetwork {
+        public:
+            // Constructor
+            NeuralNetwork(vector<unsigned int> topology, double (*fn)(double));
 
-        // Destructor
-        ~NeuralNetwork();
+            // Destructor
+            ~NeuralNetwork();
 
-        // Load progression from file
-        NeuralNetwork(const char * path);
+            // Feed forward algorithm
+            vector<double> feedForward(vector<double> input);
 
-        // Download progression to file
-        void saveProgress(const char * path);
+            // Train -> back propagation algorithm using Gradient Descent
+            void train(vector<double> input, vector<double> target);
 
-        // Getters
-        Matrix *getNeuronMatrix(int index);
-        Matrix *getActivatedNeuronMatrix(int index);
-        Matrix *getDerivedNeuronMatrix(int index);
-        Matrix *getWeightMatrix(int index);
+        private:
+            double (*activateFunction)(double);
+            double learningRate;
 
-        double getTotalError();
-        vector<double> getErrors();
+            vector<unsigned int> topology;
 
-        // Setter
-        void setInput(vector<double> input);
-        void setTarget(vector<double> target);
-        void setNeuronValue(int layerIndex, int neuronIndex, double value);
-        void setErrors();
-
-        // Learning
-        void feedForward();
-        void backPropagation();
-
-        // Output results
-        void printTarget();
-        void printOutput();
-    private:
-        vector<int> topology;
-        vector<Layer *> layers;
-        vector<Matrix *> weightMatrix;
-
-        vector<double> input;
-        
-        vector<double> target;
-        double error;
-        vector<double> errors;
-        vector<double> historicalErrors;
-};
+            vector<Matrix> weights;
+            vector<Matrix> bias;
+    };
+}
 
 #endif

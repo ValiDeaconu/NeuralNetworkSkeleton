@@ -1,5 +1,3 @@
-OBJ=NeuralNetwork
-ATR=-Wall -Wextra
 
 make:
-	g++ $(ATR) src/*.cpp -o $(OBJ)
+	g++ -Wall -Wextra src/*.cpp -o NeuralNetwork

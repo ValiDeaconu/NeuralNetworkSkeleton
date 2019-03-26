@@ -1,47 +1,64 @@
-#ifndef _MATRIX_HPP_
-#define _MATRIX_HPP_
+#ifndef __MATRIX_HPP_
+#define __MATRIX_HPP_
 
 #include <cstdio>
-#include <random>
 #include <vector>
-#include <cassert>
+#include <cstdlib>
+#include <ctime>
 
-using namespace std;
+namespace OpenNN {
+    using namespace std;
+    
+    class Matrix {
+        public:
+            // Constructor
+            Matrix(unsigned int rows, unsigned int cols);
 
-class Matrix {
-    public:
-        // Constructor
-        Matrix(unsigned int rows, unsigned int cols, bool isRandom);
+            // Destructor
+            ~Matrix();
 
-        // Destructor
-        ~Matrix();
+            // Print function
+            void print();
 
-        // Transpose
-        Matrix *transpose();
+            // Randomize
+            void randomize();
 
-        // Conversion
-        vector<double> toVector();
+            // Operators
+            Matrix& operator =(const Matrix& srcMatrix);
+            Matrix operator +(const double value);
+            Matrix operator +(const Matrix& srcMatrix);
+            Matrix operator -(const double value);
+            Matrix operator -(const Matrix& srcMatrix);
+            Matrix operator *(const double scalar);
+            Matrix operator *(const Matrix& srcMatrix);
+            Matrix operator ^(const Matrix& srcMatrix); // element wise multiplication
 
-        // Getters
-        unsigned int getRows();
-        unsigned int getCols();
+            // Transpose
+            Matrix transpose();
 
-        double getValue(unsigned int row, unsigned int col);
-        
-        // Operators
-        Matrix& operator =(Matrix* srcMatrix);
-        Matrix* operator *(Matrix* srcMatrix);
-        Matrix* operator -(Matrix* srcMatrix);
+            // Map function
+            void map(double (*fn)(double));
 
-        // Setters
-        void setValue(unsigned int row, unsigned int col, double value);
-    private:
-        unsigned int rows;
-        unsigned int cols;
+            // To array conversion
+            vector<double> toArray();
 
-        vector< vector<double> > values;
+            // Static from array conversion
+            static Matrix fromArray(double * arr, unsigned int arr_length);
+            static Matrix fromArray(vector<double> arr);
 
-        double generateRandomValue();
-};
+            // Getters
+            unsigned int getRows();
+            unsigned int getCols();
+            double getValue(unsigned int r, unsigned int c);
+
+            // Setters
+            void setValue(unsigned int r, unsigned int c, double value);
+
+        private:
+            unsigned int rows;
+            unsigned int cols;
+            vector< vector<double> > data;
+    };
+}
 
 #endif
